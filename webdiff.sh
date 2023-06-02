@@ -7,24 +7,33 @@
 #Checks if the first argument is 'add'
 if [[ "$1" = "add" ]]
 then
-    printf "Your first argument was add!"
+    if [[ $# -ne 2 ]]
+    then
+	printf "Error: Must be two arguments when 'add' is the first argument\n"
+    fi
 
 
 #Chekcs if the first argument is 'check'
 elif [[ "$1" = "check" ]]
 then
-   printf "Your first argument was check!"
+    if [[ $# -ne 2 ]]
+    then
+	printf "Error: Must be two arguments when 'check' is the first argument\n"
+    fi
 
 
 #Checks if the first arugment is 'list'
 elif [[ "$1" = "list" ]]
 then
-   printf "Your first argument was list!"
+    if [[ $# -ne 1 ]]
+    then
+	printf "Error: Must be only one argument when 'list' argument is used\n"
+    fi 
 
 
 #Error message for incorrect first argument
 else
-    printf "Error, first arugment must be 'add', 'check', or 'list'\n"
+    printf "Error: first arugment must be 'add', 'check', or 'list'\n"
 fi
        
     
