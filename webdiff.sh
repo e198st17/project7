@@ -15,11 +15,36 @@ fi
 #Checks if the first argument is 'add'
 if [[ "$1" = "add" ]]
 then
-    if [[ $# -ne 2 ]] #Checks that there are 2 arguments
+    if [[ $# -ne 3 ]] #Checks that there are 3 arguments
     then
-	printf "Error: Must be two arguments when 'add' is the first argument\n"
+	printf "Error: Must be 3 arguments when 'add' is the first argument\n"
+    fi
+    
+    #Assigns variables
+    NICKNAME="$2"
+    WEB_ADDRESS="$3"
+
+    #Checks if the given web address exists, if not prints error message
+    if ! curl --output /dev/null --silent --head --fail "$WEB_ADDRESS"
+    then
+	printf "Error: The web addres '$WEB_ADDRESS' does not exist.\n"
+	exit
     fi
 
+    #Checks if the nickname given already exists
+    if grep -q "^$NICKNAME" "$WEB_FILE"
+    then
+	printf "Error: The nickname '$NICKNAME' already exists.\n"
+	exit
+    fi
+
+    #Gets the output of curl for the given web address
+    curl_output=$(curl --silent "$WEB_ADDRESS")
+
+
+    #Adds the nickname, address, and curl output to the .webd file
+    echo "$NICKNAME $WEB_ADDRESS $curl_output" >> "$WEB_FILE"
+    
 
 #Chekcs if the first argument is 'check'
 elif [[ "$1" = "check" ]]
