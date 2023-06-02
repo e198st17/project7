@@ -1,3 +1,3 @@
 #!/bin/bash
 
-printf "Hello my name is Lucas"
+printf "I love Aimee HEHEHEHEHEHEHE\n"
