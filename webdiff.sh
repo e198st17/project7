@@ -18,6 +18,7 @@ then
     if [[ $# -ne 3 ]] #Checks that there are 3 arguments
     then
 	printf "Error: Must be 3 arguments when 'add' is the first argument\n"
+	exit
     fi
     
     #Assigns variables
@@ -27,7 +28,7 @@ then
     #Checks if the given web address exists, if not prints error message
     if ! curl --output /dev/null --silent --head --fail "$WEB_ADDRESS"
     then
-	printf "Error: The web addres '$WEB_ADDRESS' does not exist.\n"
+	printf "Error: The web address '$WEB_ADDRESS' does not exist.\n"
 	exit
     fi
 
@@ -38,21 +39,44 @@ then
 	exit
     fi
 
-    #Gets the output of curl for the given web address
-    curl_output=$(curl --silent "$WEB_ADDRESS")
+    #Gets the cleaned output of curl for the given web address
+    curl_output=$(curl -s "$WEB_ADDRESS" | tr -d " " | tr -d "\n" | tr -d "|" | tr -d "%")
 
 
     #Adds the nickname, address, and curl output to the .webd file
-    echo "$NICKNAME $WEB_ADDRESS $curl_output" >> "$WEB_FILE"
+    echo "$NICKNAME|$WEB_ADDRESS|$curl_output" >> "$WEB_FILE"
+    printf "The website '$WEB_ADDRESS' has been added with the nickname '$NICKNAME'.\n"
     
 
-#Chekcs if the first argument is 'check'
+#Checks if the first argument is 'check'
 elif [[ "$1" = "check" ]]
 then
     if [[ $# -ne 2 ]] #Checks that there are 2 arguments
     then
 	printf "Error: Must be two arguments when 'check' is the first argument\n"
+	exit
     fi
+
+    #Sets the nickname variable
+    NICKNAME=$2
+
+    #Checks if the nickname exists in the file
+    if ! grep -q "^$NICKNAME" "$WEB_FILE"
+    then
+	printf "Error: The nickname '$NICKNAME' does not exist.\n"
+	exit
+    fi
+
+    #gets the stored curl output from when the address was added to file
+    previous_curl=$(grep "^$NICKNAME|" "$WEB_FILE" | awk -F '|' '{print $3}')
+
+    
+    #Gets the current curl output from the website
+    current_address=$(grep "^$NICKNAME|" "$WEB_FILE" | awk -F '|' '{print $2}')
+    current_curl=$(curl -s $current_address | tr -d '%' | tr -d '\n' | tr -d ' ' | tr -d '|' )
+    printf "$current_curl\n"
+    
+    
 
 
 #Checks if the first arugment is 'list'
@@ -61,8 +85,12 @@ then
     if [[ $# -ne 1 ]] #Checks that there is only one arugment
     then
 	printf "Error: Must be only one argument when 'list' argument is used\n"
+	exit
     fi
-    awk '{ print $1 }' "$WEB_FILE" #prints the first column of webd file (the nicknames)
+
+    #pritns the nicknames that are currently in the file
+    printf "Nicknames currently added:\n"
+    awk -F '|' '{print $1}' "$WEB_FILE" 
    
 
 
