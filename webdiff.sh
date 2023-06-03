@@ -73,11 +73,17 @@ then
     
     #Gets the current curl output from the website
     current_address=$(grep "^$NICKNAME|" "$WEB_FILE" | awk -F '|' '{print $2}')
-    current_curl=$(curl -s $current_address | tr -d '%' | tr -d '\n' | tr -d ' ' | tr -d '|' )
-    printf "$current_curl\n"
-    
+    current_curl=$(curl -s $current_address | tr -d " " | tr -d "\n" | tr -d "|" | tr -d "%")
     
 
+
+    #check if there are differnces
+    if [ "$current_curl" = "$previous_curl" ]
+    then
+	printf "There were no changes in the website '$current_address' (Nickname: '$NICKNAME').\n"
+    else
+	printf "There were changes for website '$current_address'.\n"
+    fi
 
 #Checks if the first arugment is 'list'
 elif [[ "$1" = "list" ]]
