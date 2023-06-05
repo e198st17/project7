@@ -4,6 +4,10 @@
 #EVE198
 #webdiff.sh
 
+#./webdiff.sh add <nickname> <web_address>
+#./webdiff.sh check <nickname>
+#./webdiff.sh list
+
 #creates a variable for the file that is created
 WEB_FILE=~/.webd
 
