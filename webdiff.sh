@@ -82,7 +82,14 @@ then
     then
 	printf "There were no changes in the website '$current_address' (Nickname: '$NICKNAME').\n"
     else
-	printf "There were changes for website '$current_address'.\n"
+	printf "There were changes for website '$current_address'. Changes detected:\n"
+
+	#Prints the differences, uses process substitution because diff takes files as input
+	diff <(echo "$previous_curl") <(echo "$current_curl")
+
+	#Updates the previous curl output with the current curl output
+	sed -i "s/^$NICKNAME|.*/$NICKNAME|$current_address|$current_curl/" "$WEB_FILE"
+	printf "File has been updated with the current website.\n"
     fi
 
 #Checks if the first arugment is 'list'
@@ -94,7 +101,7 @@ then
 	exit
     fi
 
-    #pritns the nicknames that are currently in the file
+    #prints the nicknames that are currently in the file
     printf "Nicknames currently added:\n"
     awk -F '|' '{print $1}' "$WEB_FILE" 
    
